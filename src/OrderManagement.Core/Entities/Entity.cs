@@ -2,8 +2,8 @@
 {
     public class Entity : IEntity
     {
-        public Guid Id { get; set; }
-        public bool IsDeleted { get; set; }
+        public int Id { get; set; }
+        public bool IsDeleted { get; set; } = false;
         public DateTime CreatedDate { get; set; } = DateTime.Now;
         public DateTime UpdatedDate { get; set; }
     }

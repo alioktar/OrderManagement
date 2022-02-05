@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\OrderManagement.Core\OrderManagement.Core.csproj" />
+  </ItemGroup>
+
 </Project>

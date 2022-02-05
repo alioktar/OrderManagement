@@ -25,7 +25,7 @@ namespace OrderManagement.Service.Extensions
             return services;
         }
 
-        public static void UseInitializeDatabase(this IApplicationBuilder app)
+        public static void UseDatabaseInitializer(this IApplicationBuilder app)
         {
             using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {

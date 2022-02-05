@@ -9,9 +9,7 @@ namespace OrderManagement.Service.DependencyResolvers.Autofac
     {
         protected override void Load(ContainerBuilder builder)
         {
-            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
-
-            builder.RegisterAssemblyTypes(assembly).AsImplementedInterfaces()
+            builder.RegisterAssemblyTypes(System.Reflection.Assembly.GetExecutingAssembly()).AsImplementedInterfaces()
                 .EnableInterfaceInterceptors(new ProxyGenerationOptions()
                 {
                     Selector = new AspectInterceptorSelector()

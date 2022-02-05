@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using OrderManagement.DTOs;
+using OrderManagement.Entities;
 
 namespace OrderManagement.Service.MapperProfiles
 {
@@ -6,6 +8,10 @@ namespace OrderManagement.Service.MapperProfiles
     {
         public CustomerProfile()
         {
+            CreateMap<Customer, CustomerDto>().ReverseMap();
+            CreateMap<Customer, CustomerAddDto>().ReverseMap();
+            CreateMap<Customer, CustomerUpdateDto>().ReverseMap();
+            CreateMap<Customer, CustomerWithOrdersDto>().ReverseMap();
         }
     }
 }

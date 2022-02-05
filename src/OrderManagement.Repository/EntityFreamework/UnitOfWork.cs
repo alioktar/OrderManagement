@@ -7,15 +7,18 @@ namespace OrderManagement.Repository.EntityFreamework
     {
         private readonly DbContext _context;
 
-        private ICustomerRepository _customerRepository;
+        private readonly ICustomerRepository _customerRepository;
+        private readonly IProductRepository _productRepository;
 
-        public UnitOfWork(DbContext context, ICustomerRepository customerRepository)
+        public UnitOfWork(DbContext context, ICustomerRepository customerRepository, IProductRepository productRepository)
         {
             _context = context;
             _customerRepository = customerRepository;
+            _productRepository = productRepository;
         }
 
         public ICustomerRepository CustomerRepository => _customerRepository;
+        public IProductRepository ProductRepository => _productRepository;
 
         public int SaveChanges()
         {

@@ -3,19 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderManagement.Core", "src\OrderManagement.Core\OrderManagement.Core.csproj", "{B1778BFF-8AB6-41FA-A6E7-F23A6C153B88}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderManagement.Core", "src\OrderManagement.Core\OrderManagement.Core.csproj", "{B1778BFF-8AB6-41FA-A6E7-F23A6C153B88}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderManagement.Entities", "src\OrderManagement.Entities\OrderManagement.Entities.csproj", "{B102E31A-1260-4FCC-936B-3B44102BD359}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderManagement.Entities", "src\OrderManagement.Entities\OrderManagement.Entities.csproj", "{B102E31A-1260-4FCC-936B-3B44102BD359}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderManagement.DTOs", "src\OrderManagement.DTOs\OrderManagement.DTOs.csproj", "{ED497EEC-1C0C-4D3C-84CE-213834948446}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderManagement.DTOs", "src\OrderManagement.DTOs\OrderManagement.DTOs.csproj", "{ED497EEC-1C0C-4D3C-84CE-213834948446}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderManagement.Service", "src\OrderManagement.Service\OrderManagement.Service.csproj", "{E919FD63-565E-48FF-AE22-BCD5FCA98F72}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderManagement.Service", "src\OrderManagement.Service\OrderManagement.Service.csproj", "{E919FD63-565E-48FF-AE22-BCD5FCA98F72}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderManagement.Repository", "src\OrderManagement.Repository\OrderManagement.Repository.csproj", "{B5B41BC0-2894-42C1-AFE5-38D16EAA38C3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderManagement.Repository", "src\OrderManagement.Repository\OrderManagement.Repository.csproj", "{B5B41BC0-2894-42C1-AFE5-38D16EAA38C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderManagement.ApiHost", "src\OrderManagement.ApiHost\OrderManagement.ApiHost.csproj", "{1F7ED422-5AB4-499F-B73C-CDD29438460A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderManagement.ApiHost", "src\OrderManagement.ApiHost\OrderManagement.ApiHost.csproj", "{1F7ED422-5AB4-499F-B73C-CDD29438460A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderManagement.HttpApi", "src\OrderManagement.HttpApi\OrderManagement.HttpApi.csproj", "{18DD4E57-5A68-4FDC-9606-819BAE6402DB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderManagement.HttpApi", "src\OrderManagement.HttpApi\OrderManagement.HttpApi.csproj", "{18DD4E57-5A68-4FDC-9606-819BAE6402DB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
