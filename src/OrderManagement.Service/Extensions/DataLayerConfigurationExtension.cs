@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using OrderManagement.Repository.Base;
 using OrderManagement.Repository.EntityFreamework;
 using OrderManagement.Repository.EntityFreamework.Contexts;
-using OrderManagement.Repository.EntityFreamework.Repositories;
 
 namespace OrderManagement.Service.Extensions
 {
@@ -16,10 +15,11 @@ namespace OrderManagement.Service.Extensions
             services.AddDbContext<OrderManagementDbContext>(options =>
                 options.UseNpgsql(
                     configuration.GetConnectionString("Default"),
-                    builder => builder.MigrationsAssembly(typeof(OrderManagementDbContext).Assembly.GetName().Name)), ServiceLifetime.Transient);
+                    builder => builder.MigrationsAssembly(typeof(OrderManagementDbContext).Assembly.GetName().Name)
+                )
+            );
 
             services.AddScoped<DbContext>(provider => provider.GetRequiredService<OrderManagementDbContext>());
-            services.AddScoped<ICustomerRepository, CustomerRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             return services;
@@ -29,7 +29,8 @@ namespace OrderManagement.Service.Extensions
         {
             using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
-                scope.ServiceProvider.GetRequiredService<OrderManagementDbContext>().Database.Migrate();
+                var context = scope.ServiceProvider.GetRequiredService<OrderManagementDbContext>();
+                context.Database.Migrate();
             }
         }
     }

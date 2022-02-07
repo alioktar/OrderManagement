@@ -6,8 +6,8 @@ namespace OrderManagement.DTOs
     {
         public int Id { get; set; }
         public string OrderNumber { get; set; }
-        public CustomerDto Customer { get; set; }
+        public CustomerOrderDto Customer { get; set; }
         public AddressDto ShippingAddress { get; set; }
-        public IEnumerable<ProductDto> Products { get; set; }
+        public ICollection<ProductDto> Products { get; set; }
     }
 }

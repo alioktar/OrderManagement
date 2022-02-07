@@ -1,10 +1,17 @@
 ﻿using AutoMapper;
+using OrderManagement.Core.Aspects.Autofac.Caching;
+using OrderManagement.Core.Aspects.Autofac.Validation;
 using OrderManagement.Core.CrossCuttingConcerns.Caching;
+using OrderManagement.Core.Utilities.Exceptions;
 using OrderManagement.Core.Utilities.Response;
 using OrderManagement.DTOs;
+using OrderManagement.Entities;
 using OrderManagement.Repository.Base;
 using OrderManagement.Service.Core;
 using OrderManagement.Service.Services.Base;
+using OrderManagement.Service.Validators.Address;
+using OrderManagement.Service.Validators.Customer;
+using System.Linq.Expressions;
 
 namespace OrderManagement.Service.Services.Concrete
 {
@@ -16,79 +23,138 @@ namespace OrderManagement.Service.Services.Concrete
 
         public CustomerService(IUnitOfWork unitOfWork, IMapper mapper, ICacheManager cacheManager) : base(unitOfWork, mapper, cacheManager) { }
 
-        public Task<IDataResponse<CustomerDto>> AddCustomerAddress(int customerId, AddressAddDto address)
+        public async Task<IDataResponse<CustomerDto>> GetAsync(int customerId)
         {
-            throw new NotImplementedException();
+            var customer = await UnitOfWork.CustomerRepository.GetAsync(
+                c => c.Id == customerId,
+                new Expression<Func<Customer, object>>[] {
+                    c => c.Addresses,
+                    c => c.Addresses.Where(a => !a.IsDeleted)
+                }) ?? throw new NotFoundException($"Customer not found with id : {customerId}");
+
+            return new SuccessDataResponse<CustomerDto>(Mapper.Map<CustomerDto>(customer));
         }
 
-        public Task<IResponse> AddOrder(int customerId)
+        [CacheAspect(type:typeof(IDataResponse<IEnumerable<CustomerDto>>))]
+        public async Task<IDataResponse<IEnumerable<CustomerDto>>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            var customers = await UnitOfWork.CustomerRepository.GetListAsync(
+                c => !c.IsDeleted,
+                new Expression<Func<Customer, object>>[] {
+                    c => c.Addresses,
+                    c => c.Addresses.Where(a => !a.IsDeleted)
+                });
+
+            return new SuccessDataResponse<IEnumerable<CustomerDto>>(Mapper.Map<IEnumerable<CustomerDto>>(customers));
         }
 
-        public Task<IResponse> CancelOrder(int customerId)
+        public async Task<IDataResponse<CustomerWithOrdersDto>> GetCustomerWithOrdersAsync(int customerId)
         {
-            throw new NotImplementedException();
+            var customer = await UnitOfWork.CustomerRepository.GetWithIncludesAsync(c => c.Id == customerId) ?? throw new NotFoundException($"Customer not found with id : {customerId}");
+            var response = new CustomerWithOrdersDto
+            {
+                Id = customer.Id,
+                FullName = customer.FullName,
+                Addresses = Mapper.Map<List<AddressDto>>(customer.Addresses),
+                Orders= new List<OrderDto>(),
+            };
+
+            foreach (var order in customer.Orders)
+            {
+                response.Orders.Add(new OrderDto
+                {
+                    Id = order.Id,
+                    OrderNumber = order.OrderNumber,
+                    Customer = Mapper.Map<CustomerOrderDto>(customer),
+                    ShippingAddress = Mapper.Map<AddressDto>(order.ShippingAddress),
+                    Products = Mapper.Map<List<ProductDto>>(order.Products.Select(x => x.Product).ToList()),
+                });
+            }
+
+            return new SuccessDataResponse<CustomerWithOrdersDto>(response);
         }
 
-        public Task<IDataResponse<CustomerDto>> Create(CustomerAddDto customer)
+        [ValidationAspect(typeof(CustomerAddValidator))]
+        public async Task<IDataResponse<CustomerDto>> CreateAsync(CustomerAddDto customer)
         {
-            throw new NotImplementedException();
+            var added = await UnitOfWork.CustomerRepository.AddAsync(Mapper.Map<Customer>(customer));
+            await UnitOfWork.SaveChangesAsync();
+
+            return new SuccessDataResponse<CustomerDto>(Mapper.Map<CustomerDto>(added));
         }
 
-        public Task<IResponse> Delete(int customerId)
+        [ValidationAspect(typeof(CustomerUpdateValidator))]
+        public async Task<IDataResponse<CustomerDto>> UpdateAsync(CustomerUpdateDto customer)
         {
-            throw new NotImplementedException();
+            var exists = await UnitOfWork.CustomerRepository.GetAsync(c => c.Id == customer.Id) ?? throw new NotFoundException($"Customer not found with id : {customer.Id}");
+
+            var updated = UnitOfWork.CustomerRepository.Update(Mapper.Map(customer, exists));
+            await UnitOfWork.SaveChangesAsync();
+
+            return new SuccessDataResponse<CustomerDto>(Mapper.Map<CustomerDto>(updated));
         }
 
-        public Task<IResponse> DeleteCustomerAddress(int customerId, int addressId)
+        public async Task<IResponse> DeleteAsync(int customerId)
         {
-            throw new NotImplementedException();
+            var exists = await UnitOfWork.CustomerRepository.GetAsync(c => c.Id == customerId) ?? throw new NotFoundException($"Customer not found with id : {customerId}");
+            UnitOfWork.CustomerRepository.Delete(exists);
+            await UnitOfWork.SaveChangesAsync();
+
+            return new SuccessResponse();
         }
 
-        public Task<IResponse> DeleteOrder(int customerId)
+        [ValidationAspect(typeof(AddressAddValidator))]
+        public async Task<IDataResponse<CustomerDto>> AddCustomerAddressAsync(int customerId, AddressAddDto address)
         {
-            throw new NotImplementedException();
+            var customer = await UnitOfWork.CustomerRepository.GetAsync(
+                c => c.Id == customerId,
+                new Expression<Func<Customer, object>>[] {
+                    c => c.Addresses,
+                    c => c.Addresses.Where(a => !a.IsDeleted)
+                }) ?? throw new NotFoundException($"Customer not found with id : {customerId}");
+
+            customer.Addresses.Add(Mapper.Map<Address>(address));
+            await UnitOfWork.SaveChangesAsync();
+
+            return new SuccessDataResponse<CustomerDto>(Mapper.Map<CustomerDto>(customer));
         }
 
-        public Task<IDataResponse<CustomerDto>> Get(int customerId)
+        [ValidationAspect(typeof(CustomerUpdateValidator))]
+        public async Task<IDataResponse<CustomerDto>> UpdateCustomerAddressAsync(int customerId, AddressUpdateDto address)
         {
-            throw new NotImplementedException();
+            var customer = await UnitOfWork.CustomerRepository.GetAsync(
+                c => c.Id == customerId,
+                new Expression<Func<Customer, object>>[] {
+                    c => c.Addresses,
+                    c => c.Addresses.Where(a => !a.IsDeleted)
+                }) ?? throw new NotFoundException($"Customer not found with id : {customerId}");
+
+            Address exists = customer.Addresses.FirstOrDefault(a => a.Id == address.Id) ?? throw new NotFoundException($"Address not found with id : {address.Id}");
+
+            exists = Mapper.Map(address, exists);
+
+            var updated = UnitOfWork.CustomerRepository.Update(customer);
+            await UnitOfWork.SaveChangesAsync();
+
+            return new SuccessDataResponse<CustomerDto>(Mapper.Map<CustomerDto>(exists));
         }
 
-        public Task<IDataResponse<IEnumerable<CustomerDto>>> GetAll()
+        public async Task<IResponse> DeleteCustomerAddressAsync(int customerId, int addressId)
         {
-            throw new NotImplementedException();
-        }
+            var customer = await UnitOfWork.CustomerRepository.GetAsync(
+                c => c.Id == customerId,
+                new Expression<Func<Customer, object>>[] {
+                    c => c.Addresses,
+                    c => c.Addresses.Where(a => !a.IsDeleted)
+                }) ?? throw new NotFoundException($"Customer not found with id : {customerId}");
 
-        public Task<IDataResponse<CustomerWithOrdersDto>> GetCustomerWithProducts(int id)
-        {
-            throw new NotImplementedException();
-        }
+            Address address = customer.Addresses.FirstOrDefault(a => a.Id == addressId) ?? throw new NotFoundException($"Address not found with id : {addressId}");
+            customer.Addresses.Remove(address);
 
-        public Task<IDataResponse<OrderDto>> GetOrder(int customerId)
-        {
-            throw new NotImplementedException();
-        }
+            UnitOfWork.CustomerRepository.Update(customer);
+            await UnitOfWork.SaveChangesAsync();
 
-        public Task<IDataResponse<IEnumerable<OrderDto>>> GetOrders(int customerId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IDataResponse<CustomerDto>> Update(CustomerUpdateDto customer)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IDataResponse<CustomerDto>> UpdateCustomerAddress(int customerId, AddressUpdateDto address)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IResponse> UpdateOrder(int customerId)
-        {
-            throw new NotImplementedException();
+            return new SuccessResponse();
         }
     }
 }

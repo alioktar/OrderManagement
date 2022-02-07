@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OrderManagement.Repository.Base;
+using OrderManagement.Repository.EntityFreamework.Repositories;
 
 namespace OrderManagement.Repository.EntityFreamework
 {
@@ -7,18 +8,16 @@ namespace OrderManagement.Repository.EntityFreamework
     {
         private readonly DbContext _context;
 
-        private readonly ICustomerRepository _customerRepository;
-        private readonly IProductRepository _productRepository;
+        private IProductRepository _productRepository;
+        private ICustomerRepository _customerRepository;
 
-        public UnitOfWork(DbContext context, ICustomerRepository customerRepository, IProductRepository productRepository)
+        public UnitOfWork(DbContext context)
         {
             _context = context;
-            _customerRepository = customerRepository;
-            _productRepository = productRepository;
         }
 
-        public ICustomerRepository CustomerRepository => _customerRepository;
-        public IProductRepository ProductRepository => _productRepository;
+        public IProductRepository ProductRepository => _productRepository = _productRepository ?? new ProductRepository(_context);
+        public ICustomerRepository CustomerRepository => _customerRepository = _customerRepository ?? new CustomerRepository(_context);
 
         public int SaveChanges()
         {
@@ -66,11 +65,15 @@ namespace OrderManagement.Repository.EntityFreamework
 
         public void Dispose()
         {
+            _productRepository = null;
+            _customerRepository = null;
             _context.Dispose();
         }
 
         public async ValueTask DisposeAsync()
         {
+            _productRepository = null;
+            _customerRepository = null;
             await _context.DisposeAsync();
         }
 

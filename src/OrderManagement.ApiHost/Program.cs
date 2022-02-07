@@ -1,7 +1,5 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Mvc;
-using OrderManagement.Core.Extensions;
 using OrderManagement.Service.DependencyResolvers.Autofac;
 using OrderManagement.Service.Extensions;
 
@@ -36,18 +34,20 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// TODO : Will be test!
-app.UseExceptionMiddleware();
-//app.UseDatabaseInitializer();
+app.UseServiceMiddlewares();
 
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 app.MapControllers();
-app.Map("/", (HttpContext context) =>
+
+if (app.Environment.IsDevelopment())
 {
-    context.Response.Redirect("swagger/index.html");
-});
+    app.Map("/", (HttpContext context) =>
+    {
+        context.Response.Redirect("swagger/index.html");
+    });
+}
 
 app.Run();

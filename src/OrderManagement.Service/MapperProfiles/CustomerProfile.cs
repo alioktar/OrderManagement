@@ -11,6 +11,7 @@ namespace OrderManagement.Service.MapperProfiles
             CreateMap<Customer, CustomerDto>().ReverseMap();
             CreateMap<Customer, CustomerAddDto>().ReverseMap();
             CreateMap<Customer, CustomerUpdateDto>().ReverseMap();
+            CreateMap<Customer, CustomerOrderDto>().ReverseMap();
             CreateMap<Customer, CustomerWithOrdersDto>().ReverseMap();
         }
     }

@@ -21,7 +21,7 @@ namespace OrderManagement.Service.Services.Concrete
         public async Task<IDataResponse<ProductDto>> GetAsync(int productId)
         {
             var product = await UnitOfWork.ProductRepository.GetAsync(p => p.Id == productId && !p.IsDeleted) ?? throw new NotFoundException($"Product not found with id : {productId}");
-            await UnitOfWork.DisposeAsync();
+            
 
             return new SuccessDataResponse<ProductDto>(Mapper.Map<ProductDto>(product));
         }
@@ -29,7 +29,6 @@ namespace OrderManagement.Service.Services.Concrete
         public async Task<IDataResponse<IEnumerable<ProductDto>>> GetAllAsync()
         {
             var products = await UnitOfWork.ProductRepository.GetListAsync(p => !p.IsDeleted);
-            await UnitOfWork.DisposeAsync();
 
             return new SuccessDataResponse<IEnumerable<ProductDto>>(Mapper.Map<IEnumerable<ProductDto>>(products));
         }
@@ -37,7 +36,7 @@ namespace OrderManagement.Service.Services.Concrete
         public async Task<IDataResponse<ProductDto>> CreateAsync(ProductAddDto product)
         {
             var added = await UnitOfWork.ProductRepository.AddAsync(Mapper.Map<Product>(product));
-            await UnitOfWork.DisposeAsync();
+            await UnitOfWork.SaveChangesAsync();
 
             return new SuccessDataResponse<ProductDto>(Mapper.Map<ProductDto>(added));
         }
@@ -47,7 +46,7 @@ namespace OrderManagement.Service.Services.Concrete
             var existing = await UnitOfWork.ProductRepository.GetAsync(x => x.Id == product.Id) ?? throw new NotFoundException($"Product not found with id : {product.Id}");
 
             var updated = UnitOfWork.ProductRepository.Update(Mapper.Map(product, existing));
-            await UnitOfWork.DisposeAsync();
+            await UnitOfWork.SaveChangesAsync();
 
             return new SuccessDataResponse<ProductDto>(Mapper.Map<ProductDto>(updated));
         }
@@ -57,7 +56,7 @@ namespace OrderManagement.Service.Services.Concrete
             var existing = await UnitOfWork.ProductRepository.GetAsync(x => x.Id == productId) ?? throw new NotFoundException($"Product not found with id : {productId}");
 
             UnitOfWork.ProductRepository.Delete(existing);
-            await UnitOfWork.DisposeAsync();
+            await UnitOfWork.SaveChangesAsync();
 
             return new SuccessResponse();
         }

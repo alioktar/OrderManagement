@@ -2,7 +2,7 @@
 
 namespace OrderManagement.HttpApi.Base
 {
-    [Route("api/[controller]/[action]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class BaseController : ControllerBase
     {

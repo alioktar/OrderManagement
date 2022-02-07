@@ -5,24 +5,16 @@ namespace OrderManagement.Service.Services.Base
 {
     public interface ICustomerService
     {
-        Task<IDataResponse<CustomerDto>> Get(int customerId);
-        Task<IDataResponse<CustomerWithOrdersDto>> GetCustomerWithProducts(int id);
-        Task<IDataResponse<CustomerDto>> Get(int customerId);
+        Task<IDataResponse<CustomerDto>> GetAsync(int customerId);
+        Task<IDataResponse<IEnumerable<CustomerDto>>> GetAllAsync();
+        Task<IDataResponse<CustomerWithOrdersDto>> GetCustomerWithOrdersAsync(int customerId);
 
-        Task<IDataResponse<CustomerDto>> Create(CustomerAddDto customer);
-        Task<IDataResponse<CustomerDto>> Update(CustomerUpdateDto customer);
-        Task<IResponse> Delete(int customerId);
+        Task<IDataResponse<CustomerDto>> CreateAsync(CustomerAddDto customer);
+        Task<IDataResponse<CustomerDto>> UpdateAsync(CustomerUpdateDto customer);
+        Task<IResponse> DeleteAsync(int customerId);
 
-        Task<IDataResponse<CustomerDto>> AddCustomerAddress(int customerId, AddressAddDto address);
-        Task<IDataResponse<CustomerDto>> UpdateCustomerAddress(int customerId, AddressUpdateDto address);
-        Task<IResponse> DeleteCustomerAddress(int customerId, int addressId);
-
-        Task<IDataResponse<OrderDto>> GetOrder(int customerId);
-        Task<IDataResponse<IEnumerable<OrderDto>>> GetOrders(int customerId);
-
-        Task<IResponse> AddOrder(int customerId);
-        Task<IResponse> UpdateOrder(int customerId);
-        Task<IResponse> DeleteOrder(int customerId);
-        Task<IResponse> CancelOrder(int customerId);
+        Task<IDataResponse<CustomerDto>> AddCustomerAddressAsync(int customerId, AddressAddDto address);
+        Task<IDataResponse<CustomerDto>> UpdateCustomerAddressAsync(int customerId, AddressUpdateDto address);
+        Task<IResponse> DeleteCustomerAddressAsync(int customerId, int addressId);
     }
 }
